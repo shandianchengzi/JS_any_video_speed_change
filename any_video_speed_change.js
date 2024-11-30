@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         任意视频倍速播放
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  任意浏览器视频倍速播放，按键调速。
 // @author       shandianchengzi
 // @include      *
@@ -9,8 +9,8 @@
 // @license      MIT
 // @grant        none
 // ==/UserScript==
- 
- 
+
+
 //轻提醒
 function Toast(msg, duration) {
     let p1 = new Promise((resolve,reject)=>{
@@ -29,10 +29,22 @@ function Toast(msg, duration) {
         }, duration);
     });
 }
- 
+
 async function mainFunc(){
     document.body.onkeydown = function(ev) {
         var e = ev || event;
+        // 避免短时间重复触发同一按键
+        this.lastCode = this.lastCode || 0;
+        this.lastTime = this.lastTime || 0;
+        if( this.lastCode === ev ){
+            //如果每按一次，只移动一次，在这里直接return就行了
+            if( (new Date()).getTime() - this.lastTime < 100 ){
+                // console.log("长按，0.1秒后才可以移动一次");
+                return;
+            }
+        }
+        this.lastCode = ev;
+        this.lastTime = (new Date()).getTime();
         let video = document.getElementsByTagName('video')[0]
         console.log('test');
         if(video){
@@ -81,10 +93,12 @@ async function mainFunc(){
         }
     }
 }
- 
+
 (function() {
     'use strict';
-    window.onhashchange=mainFunc;
-    mainFunc();
-    // Your code here...
+    if(window.top === window.self){
+        /// 脚本只在最顶层窗口中执行，省得还得手动设置顶层窗口
+        window.onhashchange=mainFunc;
+        mainFunc();
+    }
 })();
