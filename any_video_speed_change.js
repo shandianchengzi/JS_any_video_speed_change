@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         任意视频倍速播放
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  任意浏览器视频倍速播放，按键调速。
 // @author       shandianchengzi
 // @include      *
@@ -96,9 +96,9 @@ async function mainFunc(){
 
 (function() {
     'use strict';
-    if(window.top === window.self){
-        /// 脚本只在最顶层窗口中执行，省得还得手动设置顶层窗口
-        window.onhashchange=mainFunc;
-        mainFunc();
-    }
+    window.onhashchange=mainFunc;
+    mainFunc();
+    // TODO: 这个代码不管用，会导致所有的都运行不了，现在禁用了，还是手动开顶层窗口的设置吧（原注释：脚本只在最顶层窗口中执行，省得还得手动设置顶层窗口）
+    // if(window.top === window.self){
+    // }
 })();
