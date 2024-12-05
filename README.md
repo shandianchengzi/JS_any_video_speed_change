@@ -1,4 +1,6 @@
-# Any video speed change
+[EN](./README_EN.md)/中文版
+
+# 任意视频倍速播放
 
 功能如下：
 
