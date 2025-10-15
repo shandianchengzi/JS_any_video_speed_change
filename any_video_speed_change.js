@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         任意视频倍速播放
 // @namespace    http://tampermonkey.net/
-// @version      0.4.1
+// @version      0.5
 // @description  任意浏览器视频倍速播放，按键调速。
 // @author       shandianchengzi
 // @include      *
@@ -24,7 +24,13 @@ const DEFAULT_KEYS = {
     normalSpeed: '1',
     doubleSpeed: '2',
     tripleSpeed: '3',
-    quadrupleSpeed: '4'
+    quadrupleSpeed: '4',
+    speedList: {
+        normalSpeed: 1.0,
+        doubleSpeed: 2.0,
+        tripleSpeed: 3.0,
+        quadrupleSpeed: 4.0
+    }
 };
 
 const JS_name = "VIDEOSPEED_keys";
@@ -87,12 +93,16 @@ function configureShortcuts() {
         forward: '前进5秒键 (默认: →)',
         backward: '后退5秒键 (默认: ←)',
         volumeUp: '增加音量键 (默认: ↑)',
-        volumeDown: '降低音量键 (默认: ↓)',
-        normalSpeed: '正常速度键 (默认: 1)',
-        doubleSpeed: '2倍速键 (默认: 2)',
-        tripleSpeed: '3倍速键 (默认: 3)',
-        quadrupleSpeed: '4倍速键 (默认: 4)'
+        volumeDown: '降低音量键 (默认: ↓)'
     };
+
+    const speedLabels = {
+        normalSpeed: '倍速键 (默认: 1)',
+        doubleSpeed: '倍速键 (默认: 2)',
+        tripleSpeed: '倍速键 (默认: 3)',
+        quadrupleSpeed: '倍速键 (默认: 4)'
+    };
+
 
     for (const [key, label] of Object.entries(keyLabels)) {
         formHTML += `
@@ -104,9 +114,20 @@ function configureShortcuts() {
         `;
     }
 
+    for (const [key, label] of Object.entries(speedLabels)) {
+        formHTML += `
+            <label style="font-size: 14px; display: block; margin-bottom: 5px;">
+            <input type="text" id="${key}" value="${keys['speedList'][key] || ''}" style="width: 10%; padding: 5px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px;">    
+            ${label}
+                <input type="text" id="${key}" value="${keys[key] || ''}"
+                       style="width: 100%; padding: 5px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px;">
+            </label>
+        `;
+    }
+
     formHTML += `
         </div>
-        <p>具体的键位与名称的对应关系可以查询：https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/code</p>
+        <p>倍速调节范围：0.1~16<br>具体的键位与名称的对应关系可以查询：https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/code</p>
         <div style="text-align: right; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
             <button id="saveShortcuts" style="padding: 8px 16px; margin-right: 10px; background-color: #4CAF50;
                     color: white; border: none; border-radius: 4px; cursor: pointer;">保存</button>
