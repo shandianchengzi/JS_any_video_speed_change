@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         任意视频倍速播放
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.5.1
 // @description  任意浏览器视频倍速播放，按键调速。
 // @author       shandianchengzi
 // @include      *
@@ -103,7 +103,6 @@ function configureShortcuts() {
         quadrupleSpeed: '倍速键 (默认: 4)'
     };
 
-
     for (const [key, label] of Object.entries(keyLabels)) {
         formHTML += `
             <label style="font-size: 14px; display: block; margin-bottom: 5px;">
@@ -117,7 +116,7 @@ function configureShortcuts() {
     for (const [key, label] of Object.entries(speedLabels)) {
         formHTML += `
             <label style="font-size: 14px; display: block; margin-bottom: 5px;">
-            <input type="text" id="${key}" value="${keys['speedList'][key] || ''}" style="width: 10%; padding: 5px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px;">    
+            <input type="text" id="${key}_value" value="${keys['speedList'][key] || ''}" style="width: 10%; padding: 5px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px;">    
             ${label}
                 <input type="text" id="${key}" value="${keys[key] || ''}"
                        style="width: 100%; padding: 5px; margin-top: 2px; border: 1px solid #ccc; border-radius: 4px;">
@@ -141,12 +140,22 @@ function configureShortcuts() {
 
     // 添加事件监听器
     document.getElementById('saveShortcuts').addEventListener('click', () => {
-        const newKeys = {};
+        const newKeys = {...keys};
+        const newSpeedList = {...keys.speedList};
 
+        // 更新普通按键
         for (const key of Object.keys(keyLabels)) {
-            newKeys[key] = document.getElementById(key).value.trim() || keys[key];
+            newKeys[key] = document.getElementById(key).value.trim() || DEFAULT_KEYS[key];
         }
 
+        // 更新速度按键和对应的速度值
+        for (const key of Object.keys(speedLabels)) {
+            newKeys[key] = document.getElementById(key).value.trim() || DEFAULT_KEYS[key];
+            const speedValue = parseFloat(document.getElementById(`${key}_value`).value);
+            newSpeedList[key] = isNaN(speedValue) ? DEFAULT_KEYS.speedList[key] : speedValue;
+        }
+
+        newKeys.speedList = newSpeedList;
         GM_setValue(JS_name, newKeys);
         document.body.removeChild(configWindow);
         Toast('快捷键配置已保存，刷新页面后生效', 2000);
@@ -177,10 +186,10 @@ function showCurrentConfig() {
 后退5秒: ${keys.backward}
 增加音量: ${keys.volumeUp}
 降低音量: ${keys.volumeDown}
-正常速度: ${keys.normalSpeed}
-2倍速: ${keys.doubleSpeed}
-3倍速: ${keys.tripleSpeed}
-4倍速: ${keys.quadrupleSpeed}
+${keys.speedList.normalSpeed}倍速: ${keys.normalSpeed}
+${keys.speedList.doubleSpeed}倍速: ${keys.doubleSpeed}
+${keys.speedList.tripleSpeed}倍速: ${keys.tripleSpeed}
+${keys.speedList.quadrupleSpeed}倍速: ${keys.quadrupleSpeed}
     `.trim();
 
     alert(configText);
@@ -239,20 +248,20 @@ async function mainFunc(){
                     Toast(video.volume.toFixed(1), 100);
                     break;
                 case keys.normalSpeed: // 正常速度
-                    video.playbackRate = 1;
-                    Toast(video.playbackRate, 100);
+                    video.playbackRate = keys.speedList.normalSpeed;
+                    Toast(video.playbackRate.toFixed(1), 100);
                     break;
                 case keys.doubleSpeed: // 2倍速
-                    video.playbackRate = 2;
-                    Toast(video.playbackRate, 100);
+                    video.playbackRate = keys.speedList.doubleSpeed;
+                    Toast(video.playbackRate.toFixed(1), 100);
                     break;
                 case keys.tripleSpeed: // 3倍速
-                    video.playbackRate = 3;
-                    Toast(video.playbackRate, 100);
+                    video.playbackRate = keys.speedList.tripleSpeed;
+                    Toast(video.playbackRate.toFixed(1), 100);
                     break;
                 case keys.quadrupleSpeed: // 4倍速
-                    video.playbackRate = 4;
-                    Toast(video.playbackRate, 100);
+                    video.playbackRate = keys.speedList.quadrupleSpeed;
+                    Toast(video.playbackRate.toFixed(1), 100);
                     break;
                 default:
                     return;
