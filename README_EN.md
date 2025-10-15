@@ -12,6 +12,8 @@ Functions are as follows:
 
 ④ +/-10% volume: Press ↑/↓.
 
+After 0.5 version, the shortcut configuration function is added:
+![alt text](image.png)
 
 Note: At present, I have tested mooc and local video, both of which are OK. Please feedback to me if there are websites that are not OK.
 
