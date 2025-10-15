@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         任意视频倍速播放
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.4.1
 // @description  任意浏览器视频倍速播放，按键调速。
 // @author       shandianchengzi
 // @include      *
@@ -34,61 +34,67 @@ async function mainFunc(){
     document.body.onkeydown = function(ev) {
         var e = ev || event;
         // 避免短时间重复触发同一按键
-        this.lastCode = this.lastCode || 0;
+        this.lastKey = this.lastKey || '';
         this.lastTime = this.lastTime || 0;
-        if( this.lastCode === ev ){
-            //如果每按一次，只移动一次，在这里直接return就行了
-            if( (new Date()).getTime() - this.lastTime < 100 ){
-                // console.log("长按，0.1秒后才可以移动一次");
+        
+        // e.keyCode 已经被废弃，不建议使用，改用 e.key 代替
+        if(this.lastKey === e.key) {
+            if((new Date()).getTime() - this.lastTime < 100) {
+                // console.log("请等会儿再按，每0.1秒才可以触发一次");
                 return;
             }
         }
-        this.lastCode = ev;
+        
+        this.lastKey = e.key;
         this.lastTime = (new Date()).getTime();
-        let video = document.getElementsByTagName('video')[0]
+        
+        let video = document.getElementsByTagName('video')[0];
         console.log('test');
+        
         if(video){
-            switch(e.keyCode){
-                case 87: //w键
+            switch(e.key){
+                case 'w': //w键
+                case 'W':
                     video.playbackRate += 0.25;
-                    Toast(video.playbackRate,100);
+                    Toast(video.playbackRate.toFixed(2), 100);
                     break;
-                case 83: //s键
-                    video.playbackRate -= 0.25
-                    Toast(video.playbackRate,100);
+                case 's': //s键
+                case 'S':
+                    video.playbackRate -= 0.25;
+                    Toast(video.playbackRate.toFixed(2), 100);
                     break;
-                case 39: //→
+                case 'ArrowRight': //→
                     video.currentTime += 5;
                     break;
-                case 37: //←
+                case 'ArrowLeft': //←
                     video.currentTime -= 5;
                     break;
-                case 38: //↑
-                    video.volume += 0.1;
-                    Toast(video.volume,100);
+                case 'ArrowUp': //↑
+                    video.volume = Math.min(video.volume + 0.1, 1);
+                    Toast(video.volume.toFixed(1), 100);
                     break;
-                case 40: //↓
-                    video.volume -= 0.1;
-                    Toast(video.volume,100);
+                case 'ArrowDown': //↓
+                    video.volume = Math.max(video.volume - 0.1, 0);
+                    Toast(video.volume.toFixed(1), 100);
                     break;
-                case 49: //1
+                case '1': //1
                     video.playbackRate = 1;
-                    Toast(video.playbackRate,100);
+                    Toast(video.playbackRate, 100);
                     break;
-                case 50: //2
+                case '2': //2
                     video.playbackRate = 2;
-                    Toast(video.playbackRate,100);
+                    Toast(video.playbackRate, 100);
                     break;
-                case 51: //3
+                case '3': //3
                     video.playbackRate = 3;
-                    Toast(video.playbackRate,100);
+                    Toast(video.playbackRate, 100);
                     break;
-                case 52: //4
+                case '4': //4
                     video.playbackRate = 4;
-                    Toast(video.playbackRate,100);
+                    Toast(video.playbackRate, 100);
                     break;
                 default:
-                    return e;
+                    return;
             }
         }
     }
@@ -98,7 +104,7 @@ async function mainFunc(){
     'use strict';
     window.onhashchange=mainFunc;
     mainFunc();
-    // TODO: 这个代码不管用，会导致所有的都运行不了，现在禁用了，还是手动开顶层窗口的设置吧（原注释：脚本只在最顶层窗口中执行，省得还得手动设置顶层窗口）
+    // 这个代码不管用，会导致所有的都运行不了。建议编辑脚本，设置-通用-仅在顶层页面（框架）运行-是
     // if(window.top === window.self){
     // }
 })();
