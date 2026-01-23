@@ -26,7 +26,7 @@
 
 ## Greasyfork 下载链接
 
-(https://greasyfork.org/zh-CN/scripts/563762-deepseek原始对话导出)[https://greasyfork.org/zh-CN/scripts/563762-deepseek%E5%8E%9F%E5%A7%8B%E5%AF%B9%E8%AF%9D%E5%AF%BC%E5%87%BA]
+[https://greasyfork.org/zh-CN/scripts/563762-deepseek原始对话导出](https://greasyfork.org/zh-CN/scripts/563762-deepseek%E5%8E%9F%E5%A7%8B%E5%AF%B9%E8%AF%9D%E5%AF%BC%E5%87%BA)
 
 ## 注意事项
 
